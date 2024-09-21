@@ -6,15 +6,20 @@ config = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM fully loaded and parsed');
     loadSettings();
     setupEventListeners();
     initSqlJs();
 });
 
 function initSqlJs() {
+    console.log('Initializing SQL.js');
     initSqlJs(config).then(function(SQL) {
+        console.log('SQL.js initialized successfully');
         window.SQL = SQL;
         loadDatabase(localStorage.getItem('dbPath') || 'ndrs.db');
+    }).catch(error => {
+        console.error('Error initializing SQL.js:', error);
     });
 }
 
@@ -46,35 +51,48 @@ function saveSettings() {
 }
 
 function loadDatabase(dbPath) {
-    // Используем прокси-сервис для обхода CORS
-    const corsProxy = 'https://cors-anywhere.herokuapp.com/';
+    console.log('Loading database from:', dbPath);
     const rawGitHubUrl = 'https://raw.githubusercontent.com/tiqidini/ndr/main/ndrs.db';
     
-    fetch(corsProxy + rawGitHubUrl)
-        .then(response => response.arrayBuffer())
+    fetch(rawGitHubUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            console.log('Database fetched successfully');
+            return response.arrayBuffer();
+        })
         .then(buffer => {
+            console.log('Creating SQL database from buffer');
             db = new SQL.Database(new Uint8Array(buffer));
             loadData();
         })
         .catch(error => {
             console.error('Error loading database:', error);
-            alert('Ошибка при загрузке базы данных. Проверьте подключение к интернету и попробуйте снова.');
+            alert('Ошибка при загрузке базы данных. Проверьте консоль разработчика для деталей.');
         });
 }
 
 function loadData() {
-    const results = db.exec("SELECT code, title, year, files, notes FROM ndrs ORDER BY year DESC");
-    if (results.length > 0) {
-        const data = results[0].values.map(row => ({
-            code: row[0],
-            title: row[1],
-            year: row[2],
-            files: row[3],
-            notes: row[4]
-        }));
-        displayData(data);
-    } else {
-        console.log('No data found in the database');
+    console.log('Loading data from database');
+    try {
+        const results = db.exec("SELECT code, title, year, files, notes FROM ndrs ORDER BY year DESC");
+        console.log('Query executed successfully');
+        if (results.length > 0) {
+            const data = results[0].values.map(row => ({
+                code: row[0],
+                title: row[1],
+                year: row[2],
+                files: row[3],
+                notes: row[4]
+            }));
+            console.log('Data processed:', data);
+            displayData(data);
+        } else {
+            console.log('No data found in the database');
+        }
+    } catch (error) {
+        console.error('Error executing query:', error);
     }
 }
 
