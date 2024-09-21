@@ -96,7 +96,7 @@ function loadData() {
         const results = db.exec("SELECT code, title, year, files, notes FROM ndrs ORDER BY year DESC");
         console.log('Query executed successfully, results:', results);
         if (results.length > 0 && results[0].values.length > 0) {
-            const data = results[0].values.map(row => {
+            const data = results[0].values.map((row, index) => {
                 const rowData = {
                     code: row[0],
                     title: row[1],
@@ -104,7 +104,7 @@ function loadData() {
                     files: row[3],
                     notes: row[4]
                 };
-                logRowData(rowData);
+                console.log(`Row ${index} data:`, rowData);
                 return rowData;
             });
             console.log('Data processed:', data);
@@ -125,6 +125,7 @@ function displayData(data) {
     tableBody.innerHTML = '';
     data.forEach((row, index) => {
         try {
+            console.log(`Processing row ${index}:`, row);
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${escapeHtml(row.code)}</td>
@@ -136,6 +137,9 @@ function displayData(data) {
             tableBody.appendChild(tr);
         } catch (error) {
             console.error(`Error displaying row ${index}:`, error, row);
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td colspan="5">Ошибка отображения строки ${index}</td>`;
+            tableBody.appendChild(tr);
         }
     });
     console.log('Data display completed');
@@ -203,7 +207,13 @@ function escapeHtml(unsafe) {
         return '';
     }
     if (typeof unsafe !== 'string') {
-        unsafe = String(unsafe);
+        console.warn('escapeHtml received non-string input:', unsafe, typeof unsafe);
+        try {
+            unsafe = String(unsafe);
+        } catch (e) {
+            console.error('Failed to convert to string:', e);
+            return '';
+        }
     }
     return unsafe
          .replace(/&/g, "&amp;")

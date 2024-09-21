@@ -84,5 +84,11 @@
             originalConsoleError.apply(console, arguments);
         };
     </script>
+    <script>
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error('Global error:', message, 'at', source, lineno, colno, error);
+            showError('Глобальная ошибка: ' + message);
+        };
+    </script>
 </body>
 </html>
