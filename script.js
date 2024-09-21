@@ -1,6 +1,8 @@
 let db;
 let SQL;
 
+console.log('Script.js начал выполнение');
+
 const config = {
     locateFile: filename => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${filename}`
 };
@@ -14,12 +16,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initSqlJs() {
     console.log('Initializing SQL.js');
+    if (typeof initSqlJsModule === 'undefined') {
+        console.error('initSqlJsModule is undefined');
+        displayErrorMessage(new Error('SQL.js не инициализирован'));
+        return;
+    }
     initSqlJsModule(config).then(function(sqlJs) {
         console.log('SQL.js initialized successfully');
         SQL = sqlJs;
         loadDatabase(localStorage.getItem('dbPath') || 'ndrs.db');
     }).catch(error => {
         console.error('Error initializing SQL.js:', error);
+        displayErrorMessage(error);
     });
 }
 
@@ -63,6 +71,9 @@ function loadDatabase(dbPath) {
             return response.arrayBuffer();
         })
         .then(buffer => {
+            if (buffer.byteLength === 0) {
+                throw new Error('Database file is empty');
+            }
             console.log('Creating SQL database from buffer');
             if (SQL && SQL.Database) {
                 db = new SQL.Database(new Uint8Array(buffer));

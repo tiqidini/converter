@@ -9,6 +9,9 @@
     <link rel="apple-touch-icon" href="icon-192x192.png">
 </head>
 <body>
+    <div id="jsCheck" style="color: red; font-weight: bold;">
+        Если вы видите это сообщение, значит JavaScript не работает.
+    </div>
     <div id="logContainer" style="display: none; white-space: pre-wrap; font-family: monospace; padding: 10px; background-color: #f0f0f0;"></div>
     <header>
         <h1>НДР Просмотр</h1>
@@ -51,13 +54,21 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
     <script>
-        var initSqlJsModule = initSqlJs || window.initSqlJs;
+        if (typeof initSqlJs === 'undefined') {
+            console.error('SQL.js не загрузился корректно');
+            document.body.innerHTML = '<div style="color: red; font-weight: bold;">Ошибка загрузки SQL.js. Пожалуйста, проверьте подключение к интернету и перезагрузите страницу.</div>';
+        } else {
+            var initSqlJsModule = initSqlJs;
+        }
     </script>
     <script src="script.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('service-worker.js');
         }
+    </script>
+    <script>
+        document.getElementById('jsCheck').style.display = 'none';
     </script>
 </body>
 </html>
