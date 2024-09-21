@@ -3,6 +3,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f0f0f0;
+    -webkit-text-size-adjust: 100%; /* Предотвращает автоматическое увеличение текста в Safari на iOS */
 }
 
 header {
@@ -37,6 +38,7 @@ main {
 
 #tableContainer {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Улучшает прокрутку на iOS */
 }
 
 table {

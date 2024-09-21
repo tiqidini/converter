@@ -120,15 +120,16 @@ function displayData(data) {
     data.forEach(row => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${row.code}</td>
-            <td>${row.title}</td>
-            <td>${row.year}</td>
-            <td><a href="#" onclick="openFile('${row.files}')">${row.files}</a></td>
-            <td>${row.notes}</td>
+            <td>${escapeHtml(row.code)}</td>
+            <td>${escapeHtml(row.title)}</td>
+            <td>${escapeHtml(row.year)}</td>
+            <td><a href="#" onclick="openFile('${escapeHtml(row.files)}');return false;">${escapeHtml(row.files)}</a></td>
+            <td>${escapeHtml(row.notes)}</td>
         `;
         tableBody.appendChild(tr);
     });
     console.log('Data display completed');
+    checkTableContent();
 }
 
 function openFile(fileName) {
@@ -185,3 +186,23 @@ function refreshData() {
         logContainer.innerHTML += args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' ') + '\n';
     };
 })();
+
+function escapeHtml(unsafe) {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+}
+
+// Добавьте эту функцию в конец файла
+function checkTableContent() {
+    const tableBody = document.getElementById('ndrTableBody');
+    if (tableBody.children.length === 0) {
+        console.log('Table is empty after display attempt');
+        tableBody.innerHTML = '<tr><td colspan="5">Данные не отображаются. Пожалуйста, обновите страницу или свяжитесь с администратором.</td></tr>';
+    } else {
+        console.log('Table has content:', tableBody.children.length, 'rows');
+    }
+}
