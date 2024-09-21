@@ -60,17 +60,19 @@ function saveSettings() {
 }
 
 function loadDatabase(dbPath) {
-    console.log('Loading database from:', dbPath);
+    console.log('Starting database load from:', dbPath);
+    const absoluteDbPath = 'https://raw.githubusercontent.com/tiqidini/ndr/main/ndrs.db';
     
-    fetch(dbPath)
+    fetch(absoluteDbPath)
         .then(response => {
+            console.log('Fetch response received:', response.status, response.statusText);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            console.log('Database fetched successfully');
             return response.arrayBuffer();
         })
         .then(buffer => {
+            console.log('ArrayBuffer received, size:', buffer.byteLength);
             if (buffer.byteLength === 0) {
                 throw new Error('Database file is empty');
             }
@@ -83,7 +85,7 @@ function loadDatabase(dbPath) {
             }
         })
         .catch(error => {
-            console.error('Error loading database:', error);
+            console.error('Detailed error in loadDatabase:', error);
             displayErrorMessage(error);
         });
 }
