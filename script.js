@@ -73,7 +73,7 @@ function loadDatabase(dbPath) {
         })
         .catch(error => {
             console.error('Error loading database:', error);
-            alert('Ошибка при загрузке базы данных. Проверьте консоль разработчика для деталей.');
+            displayErrorMessage(error);
         });
 }
 
@@ -81,7 +81,7 @@ function loadData() {
     console.log('Loading data from database');
     try {
         const results = db.exec("SELECT code, title, year, files, notes FROM ndrs ORDER BY year DESC");
-        console.log('Query executed successfully');
+        console.log('Query executed successfully, results:', results);
         if (results.length > 0 && results[0].values.length > 0) {
             const data = results[0].values.map(row => ({
                 code: row[0],
@@ -103,6 +103,7 @@ function loadData() {
 }
 
 function displayData(data) {
+    console.log('Displaying data, count:', data.length);
     const tableBody = document.getElementById('ndrTableBody');
     tableBody.innerHTML = '';
     data.forEach(row => {
@@ -116,6 +117,7 @@ function displayData(data) {
         `;
         tableBody.appendChild(tr);
     });
+    console.log('Data display completed');
 }
 
 function openFile(fileName) {
@@ -155,3 +157,20 @@ function displayErrorMessage(error) {
     const tableBody = document.getElementById('ndrTableBody');
     tableBody.innerHTML = `<tr><td colspan="5">Ошибка при загрузке данных: ${error.message}</td></tr>`;
 }
+
+// Добавьте эту функцию в конец файла
+function refreshData() {
+    console.log('Refreshing data');
+    loadDatabase(localStorage.getItem('dbPath') || 'ndrs.db');
+}
+
+// Переопределение console.log для отображения логов на странице
+(function() {
+    const oldLog = console.log;
+    console.log = function(...args) {
+        oldLog.apply(console, args);
+        const logContainer = document.getElementById('logContainer');
+        logContainer.style.display = 'block';
+        logContainer.innerHTML += args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' ') + '\n';
+    };
+})();
