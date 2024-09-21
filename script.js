@@ -1,33 +1,22 @@
 let db;
 let SQL;
 
-console.log('Script.js начал выполнение');
-
 const config = {
     locateFile: filename => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${filename}`
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM fully loaded and parsed');
     loadSettings();
     setupEventListeners();
     initSqlJs();
 });
 
 function initSqlJs() {
-    console.log('Initializing SQL.js');
-    if (typeof initSqlJsModule === 'undefined') {
-        console.error('initSqlJsModule is undefined');
-        displayErrorMessage(new Error('SQL.js не инициализирован'));
-        return;
-    }
     initSqlJsModule(config).then(function(sqlJs) {
-        console.log('SQL.js initialized successfully');
         SQL = sqlJs;
         loadDatabase(localStorage.getItem('dbPath') || 'ndrs.db');
     }).catch(error => {
-        console.error('Error initializing SQL.js:', error);
-        displayErrorMessage(error);
+        displayErrorMessage('Ошибка инициализации SQL.js: ' + error.message);
     });
 }
 
@@ -41,7 +30,6 @@ function setupEventListeners() {
     document.getElementById('closeSettings').addEventListener('click', closeSettings);
     document.getElementById('saveSettings').addEventListener('click', saveSettings);
     document.getElementById('searchInput').addEventListener('input', searchTable);
-    document.getElementById('refreshBtn').addEventListener('click', refreshData);
 }
 
 function openSettings() {
@@ -60,23 +48,19 @@ function saveSettings() {
 }
 
 function loadDatabase(dbPath) {
-    console.log('Starting database load from:', dbPath);
     const absoluteDbPath = 'https://raw.githubusercontent.com/tiqidini/ndr/main/ndrs.db';
     
     fetch(absoluteDbPath)
         .then(response => {
-            console.log('Fetch response received:', response.status, response.statusText);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.arrayBuffer();
         })
         .then(buffer => {
-            console.log('ArrayBuffer received, size:', buffer.byteLength);
             if (buffer.byteLength === 0) {
                 throw new Error('Database file is empty');
             }
-            console.log('Creating SQL database from buffer');
             if (SQL && SQL.Database) {
                 db = new SQL.Database(new Uint8Array(buffer));
                 loadData();
@@ -85,70 +69,64 @@ function loadDatabase(dbPath) {
             }
         })
         .catch(error => {
-            console.error('Detailed error in loadDatabase:', error);
-            displayErrorMessage(error);
+            displayErrorMessage('Ошибка загрузки базы данных: ' + error.message);
         });
 }
 
 function loadData() {
-    console.log('Loading data from database');
     try {
         const results = db.exec("SELECT code, title, year, files, notes FROM ndrs ORDER BY year DESC");
-        console.log('Query executed successfully, results:', JSON.stringify(results));
         if (results.length > 0 && results[0].values.length > 0) {
-            const data = results[0].values.map((row, index) => {
-                const rowData = {
-                    code: row[0],
-                    title: row[1],
-                    year: row[2],
-                    files: row[3],
-                    notes: row[4]
-                };
-                console.log(`Row ${index} data:`, JSON.stringify(rowData));
-                return rowData;
-            });
-            console.log('Data processed:', JSON.stringify(data));
+            const data = results[0].values.map(row => ({
+                code: row[0],
+                title: row[1],
+                year: row[2],
+                files: row[3],
+                notes: row[4]
+            }));
             displayData(data);
         } else {
-            console.log('No data found in the database');
             displayNoDataMessage();
         }
     } catch (error) {
-        console.error('Error executing query:', error);
-        displayErrorMessage(error);
+        displayErrorMessage('Ошибка выполнения запроса: ' + error.message);
     }
 }
 
 function displayData(data) {
-    console.log('Displaying data, count:', data.length);
     const tableBody = document.getElementById('ndrTableBody');
     tableBody.innerHTML = '';
-    data.forEach((row, index) => {
-        try {
-            console.log(`Processing row ${index}:`, JSON.stringify(row));
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${escapeHtml(row.code)}</td>
-                <td>${escapeHtml(row.title)}</td>
-                <td>${escapeHtml(row.year)}</td>
-                <td>${escapeHtml(row.files)}</td>
-                <td>${escapeHtml(row.notes)}</td>
-            `;
-            tableBody.appendChild(tr);
-        } catch (error) {
-            console.error(`Error displaying row ${index}:`, error, JSON.stringify(row));
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td colspan="5">Ошибка отображения строки ${index}</td>`;
-            tableBody.appendChild(tr);
-        }
+    data.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${escapeHtml(row.code)}</td>
+            <td>${escapeHtml(row.title)}</td>
+            <td>${escapeHtml(row.year)}</td>
+            <td>${escapeHtml(row.files)}</td>
+            <td>${escapeHtml(row.notes)}</td>
+        `;
+        tableBody.appendChild(tr);
     });
-    console.log('Data display completed');
-    checkTableContent();
 }
 
-function openFile(fileName) {
-    // В реальном приложении здесь будет код для открытия файла
-    alert(`Открытие файла: ${fileName}`);
+function escapeHtml(unsafe) {
+    if (unsafe == null) return '';
+    return String(unsafe)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function displayNoDataMessage() {
+    const tableBody = document.getElementById('ndrTableBody');
+    tableBody.innerHTML = '<tr><td colspan="5">Нет данных в базе данных</td></tr>';
+}
+
+function displayErrorMessage(message) {
+    const tableBody = document.getElementById('ndrTableBody');
+    tableBody.innerHTML = `<tr><td colspan="5">${escapeHtml(message)}</td></tr>`;
 }
 
 function searchTable() {
@@ -174,79 +152,6 @@ function searchTable() {
     }
 }
 
-function displayNoDataMessage() {
-    const tableBody = document.getElementById('ndrTableBody');
-    tableBody.innerHTML = '<tr><td colspan="5">Нет данных в базе данных</td></tr>';
-}
-
-function displayErrorMessage(error) {
-    console.error('Error occurred:', error);
-    const tableBody = document.getElementById('ndrTableBody');
-    tableBody.innerHTML = `<tr><td colspan="5">Произошла ошибка при загрузке данных: ${escapeHtml(error.message)}</td></tr>`;
-    showError(`Произошла ошибка при загрузке данных: ${error.message}`);
-}
-
-// Добавьте эту функцию в конец файла
-function refreshData() {
-    console.log('Refreshing data');
-    loadDatabase(localStorage.getItem('dbPath') || 'ndrs.db');
-}
-
-// Переопределение console.log для отображения логов на странице
-(function() {
-    const oldLog = console.log;
-    console.log = function(...args) {
-        oldLog.apply(console, args);
-        const logContainer = document.getElementById('logContainer');
-        logContainer.style.display = 'block';
-        logContainer.innerHTML += args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' ') + '\n';
-    };
-})();
-
-function escapeHtml(unsafe) {
-    if (unsafe === null || unsafe === undefined) {
-        return '';
-    }
-    if (typeof unsafe !== 'string') {
-        console.warn('escapeHtml received non-string input:', unsafe, typeof unsafe);
-        try {
-            unsafe = JSON.stringify(unsafe);
-        } catch (e) {
-            console.error('Failed to convert to string:', e);
-            return '[Неконвертируемое значение]';
-        }
-    }
-    return unsafe
-         .replace(/&/g, "&amp;")
-         .replace(/</g, "&lt;")
-         .replace(/>/g, "&gt;")
-         .replace(/"/g, "&quot;")
-         .replace(/'/g, "&#039;");
-}
-
-// Добавьте эту функцию для отладки
-function logRowData(row) {
-    console.log('Row data:', {
-        code: typeof row.code, 
-        title: typeof row.title, 
-        year: typeof row.year, 
-        files: typeof row.files, 
-        notes: typeof row.notes
-    });
-}
-
-function checkTableContent() {
-    const tableBody = document.getElementById('ndrTableBody');
-    if (tableBody.children.length === 0) {
-        console.log('Table is empty after display attempt');
-        tableBody.innerHTML = '<tr><td colspan="5">Данные не отображаются. Пожалуйста, обновите страницу или свяжитесь с администратором.</td></tr>';
-    } else {
-        console.log('Table has content:', tableBody.children.length, 'rows');
-    }
-}
-
-function showError(message) {
-    const errorContainer = document.getElementById('errorContainer');
-    errorContainer.style.display = 'block';
-    errorContainer.innerHTML = message;
+function openFile(fileName) {
+    alert(`Открытие файла: ${fileName}`);
 }
