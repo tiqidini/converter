@@ -1,6 +1,10 @@
 let db;
 let SQL;
 
+config = {
+    locateFile: filename => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${filename}`
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     loadSettings();
     setupEventListeners();
@@ -8,9 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initSqlJs() {
-    initSqlJs({
-        locateFile: file => `https://sql.js.org/dist/${file}`
-    }).then(function(SQL) {
+    initSqlJs(config).then(function(SQL) {
         window.SQL = SQL;
         loadDatabase(localStorage.getItem('dbPath') || 'ndrs.db');
     });
@@ -44,7 +46,11 @@ function saveSettings() {
 }
 
 function loadDatabase(dbPath) {
-    fetch(dbPath)
+    // Используем прокси-сервис для обхода CORS
+    const corsProxy = 'https://cors-anywhere.herokuapp.com/';
+    const rawGitHubUrl = 'https://raw.githubusercontent.com/tiqidini/ndr/main/ndrs.db';
+    
+    fetch(corsProxy + rawGitHubUrl)
         .then(response => response.arrayBuffer())
         .then(buffer => {
             db = new SQL.Database(new Uint8Array(buffer));
@@ -52,7 +58,7 @@ function loadDatabase(dbPath) {
         })
         .catch(error => {
             console.error('Error loading database:', error);
-            alert('Ошибка при загрузке базы данных. Проверьте путь и попробуйте снова.');
+            alert('Ошибка при загрузке базы данных. Проверьте подключение к интернету и попробуйте снова.');
         });
 }
 
