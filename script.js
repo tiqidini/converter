@@ -1,7 +1,7 @@
 let db;
 let SQL;
 
-config = {
+const config = {
     locateFile: filename => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${filename}`
 };
 
@@ -14,9 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initSqlJs() {
     console.log('Initializing SQL.js');
-    initSqlJs(config).then(function(SQL) {
+    initSqlJs(config).then(function(sqlJs) {
         console.log('SQL.js initialized successfully');
-        window.SQL = SQL;
+        SQL = sqlJs;
         loadDatabase(localStorage.getItem('dbPath') || 'ndrs.db');
     }).catch(error => {
         console.error('Error initializing SQL.js:', error);
