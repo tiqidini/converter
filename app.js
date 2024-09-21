@@ -2,24 +2,48 @@
 let db;
 
 // Загрузка базы данных автоматически из ndrs.db
-fetch('ndrs.db')
-    .then(response => response.arrayBuffer())
-    .then(arrayBuffer => {
-        const Uints = new Uint8Array(arrayBuffer);
-        db = new SQL.Database(Uints);
-        loadData();
-    })
-    .catch(error => console.error('Ошибка загрузки базы данных:', error));
+document.addEventListener('DOMContentLoaded', function() {
+    initSqlJs({ locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${file}` })
+        .then(SQL => {
+            // Загрузка базы данных автоматически из ndrs.db
+            fetch('ndrs.db')
+                .then(response => response.arrayBuffer())
+                .then(arrayBuffer => {
+                    const Uints = new Uint8Array(arrayBuffer);
+                    const db = new SQL.Database(Uints);
+                    loadData(db);
+                })
+                .catch(error => console.error('Ошибка загрузки базы данных:', error));
+        })
+        .catch(err => console.error('Ошибка инициализации SQL.js:', err));
+});
 
 // Удалить обработчик загрузки через кнопку
 // document.getElementById('load-db').remove();
 
-function loadData() {
-    const res = db.exec("SELECT * FROM ndrs"); // Замените 'your_table_name' на имя вашей таблицы
-    if (res.length > 0) {
-        const columns = res[0].columns;
-        const values = res[0].values;
-        renderTable(columns, values);
+function loadData(db) {
+    // Получение списка таблиц
+    const tableRes = db.exec("SELECT name FROM sqlite_master WHERE type='table';");
+    if (tableRes.length > 0) {
+        const tables = tableRes[0].values.map(row => row[0]);
+        console.log("Таблицы в базе данных:", tables);
+        
+        // Используем первую таблицу из списка
+        if (tables.length > 0) {
+            const tableName = tables[0];
+            const res = db.exec(`SELECT * FROM ${tableName}`);
+            if (res.length > 0) {
+                const columns = res[0].columns;
+                const values = res[0].values;
+                renderTable(columns, values);
+            } else {
+                console.log(`Таблица ${tableName} пуста`);
+            }
+        } else {
+            console.log("В базе данных нет таблиц");
+        }
+    } else {
+        console.log("Не удалось получить список таблиц");
     }
 }
 

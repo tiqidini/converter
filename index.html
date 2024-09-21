@@ -7,12 +7,11 @@
     <title>NDRS PWA</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
 </head>
 <body>
     <header>
         <h1>Просмотр записей</h1>
-        <!-- Удалить кнопку загрузки базы данных -->
-        <!-- <button id="load-db">Загрузить базу данных</button> -->
     </header>
     <main>
         <table id="data-table">
@@ -26,7 +25,6 @@
             </tbody>
         </table>
     </main>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
