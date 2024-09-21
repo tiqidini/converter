@@ -13,6 +13,7 @@
         Если вы видите это сообщение, значит JavaScript не работает.
     </div>
     <div id="logContainer" style="display: none; white-space: pre-wrap; font-family: monospace; padding: 10px; background-color: #f0f0f0;"></div>
+    <div id="errorContainer" style="color: red; font-weight: bold; padding: 10px;"></div>
     <header>
         <h1>НДР Просмотр</h1>
         <button id="refreshBtn">Обновить</button>
@@ -69,6 +70,19 @@
     </script>
     <script>
         document.getElementById('jsCheck').style.display = 'none';
+    </script>
+    <script>
+        // Добавьте эту функцию для отображения ошибок на странице
+        function showError(message) {
+            document.getElementById('errorContainer').textContent = message;
+        }
+
+        // Переопределите console.error для отображения ошибок на странице
+        const originalConsoleError = console.error;
+        console.error = function() {
+            showError(Array.from(arguments).join(' '));
+            originalConsoleError.apply(console, arguments);
+        };
     </script>
 </body>
 </html>
