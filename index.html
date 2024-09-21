@@ -7,6 +7,16 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192x192.png">
+    <style>
+        #errorContainer {
+            color: red;
+            font-weight: bold;
+            padding: 10px;
+            background-color: #ffeeee;
+            border: 1px solid red;
+            margin: 10px 0;
+        }
+    </style>
 </head>
 <body>
     <div id="jsCheck" style="color: red; font-weight: bold;">
@@ -70,6 +80,18 @@
     </script>
     <script>
         document.getElementById('jsCheck').style.display = 'none';
+    </script>
+    <script>
+        function showError(message) {
+            const errorContainer = document.getElementById('errorContainer');
+            errorContainer.textContent = message;
+            errorContainer.style.display = 'block';
+        }
+
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error('Global error:', message, 'at', source, lineno, colno, error);
+            showError(`Глобальная ошибка: ${message} в ${source}:${lineno}:${colno}`);
+        };
     </script>
     <script>
         // Добавьте эту функцию для отображения ошибок на странице

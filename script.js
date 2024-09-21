@@ -94,7 +94,7 @@ function loadData() {
     console.log('Loading data from database');
     try {
         const results = db.exec("SELECT code, title, year, files, notes FROM ndrs ORDER BY year DESC");
-        console.log('Query executed successfully, results:', results);
+        console.log('Query executed successfully, results:', JSON.stringify(results));
         if (results.length > 0 && results[0].values.length > 0) {
             const data = results[0].values.map((row, index) => {
                 const rowData = {
@@ -104,10 +104,10 @@ function loadData() {
                     files: row[3],
                     notes: row[4]
                 };
-                console.log(`Row ${index} data:`, rowData);
+                console.log(`Row ${index} data:`, JSON.stringify(rowData));
                 return rowData;
             });
-            console.log('Data processed:', data);
+            console.log('Data processed:', JSON.stringify(data));
             displayData(data);
         } else {
             console.log('No data found in the database');
@@ -125,18 +125,18 @@ function displayData(data) {
     tableBody.innerHTML = '';
     data.forEach((row, index) => {
         try {
-            console.log(`Processing row ${index}:`, row);
+            console.log(`Processing row ${index}:`, JSON.stringify(row));
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${escapeHtml(row.code)}</td>
                 <td>${escapeHtml(row.title)}</td>
                 <td>${escapeHtml(row.year)}</td>
-                <td><a href="#" onclick="openFile('${escapeHtml(row.files)}');return false;">${escapeHtml(row.files)}</a></td>
+                <td>${escapeHtml(row.files)}</td>
                 <td>${escapeHtml(row.notes)}</td>
             `;
             tableBody.appendChild(tr);
         } catch (error) {
-            console.error(`Error displaying row ${index}:`, error, row);
+            console.error(`Error displaying row ${index}:`, error, JSON.stringify(row));
             const tr = document.createElement('tr');
             tr.innerHTML = `<td colspan="5">Ошибка отображения строки ${index}</td>`;
             tableBody.appendChild(tr);
@@ -183,6 +183,7 @@ function displayErrorMessage(error) {
     console.error('Error occurred:', error);
     const tableBody = document.getElementById('ndrTableBody');
     tableBody.innerHTML = `<tr><td colspan="5">Произошла ошибка при загрузке данных: ${escapeHtml(error.message)}</td></tr>`;
+    showError(`Произошла ошибка при загрузке данных: ${error.message}`);
 }
 
 // Добавьте эту функцию в конец файла
@@ -209,10 +210,10 @@ function escapeHtml(unsafe) {
     if (typeof unsafe !== 'string') {
         console.warn('escapeHtml received non-string input:', unsafe, typeof unsafe);
         try {
-            unsafe = String(unsafe);
+            unsafe = JSON.stringify(unsafe);
         } catch (e) {
             console.error('Failed to convert to string:', e);
-            return '';
+            return '[Неконвертируемое значение]';
         }
     }
     return unsafe
@@ -234,38 +235,6 @@ function logRowData(row) {
     });
 }
 
-// Измените функцию loadData для использования logRowData
-function loadData() {
-    console.log('Loading data from database');
-    try {
-        const results = db.exec("SELECT code, title, year, files, notes FROM ndrs ORDER BY year DESC");
-        console.log('Query executed successfully, results:', results);
-        if (results.length > 0 && results[0].values.length > 0) {
-            const data = results[0].values.map(row => {
-                const rowData = {
-                    code: row[0],
-                    title: row[1],
-                    year: row[2],
-                    files: row[3],
-                    notes: row[4]
-                };
-                logRowData(rowData);
-                return rowData;
-            });
-            console.log('Data processed:', data);
-            displayData(data);
-        } else {
-            console.log('No data found in the database');
-            displayNoDataMessage();
-        }
-    } catch (error) {
-        console.error('Error executing query:', error);
-        displayErrorMessage(error);
-    }
-}
-
-// ... (остальной код остается без изменений)
-
 function checkTableContent() {
     const tableBody = document.getElementById('ndrTableBody');
     if (tableBody.children.length === 0) {
@@ -274,4 +243,10 @@ function checkTableContent() {
     } else {
         console.log('Table has content:', tableBody.children.length, 'rows');
     }
+}
+
+function showError(message) {
+    const errorContainer = document.getElementById('errorContainer');
+    errorContainer.style.display = 'block';
+    errorContainer.innerHTML = message;
 }
