@@ -1,29 +1,7 @@
-let db;
-let SQL;
-
-const config = {
-    locateFile: filename => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${filename}`
-};
-
 document.addEventListener('DOMContentLoaded', () => {
-    loadSettings();
     setupEventListeners();
-    initSqlJs();
+    loadData();
 });
-
-function initSqlJs() {
-    initSqlJsModule(config).then(function(sqlJs) {
-        SQL = sqlJs;
-        loadDatabase(localStorage.getItem('dbPath') || 'ndrs.db');
-    }).catch(error => {
-        displayErrorMessage('Ошибка инициализации SQL.js: ' + error.message);
-    });
-}
-
-function loadSettings() {
-    const dbPath = localStorage.getItem('dbPath') || 'ndrs.db';
-    document.getElementById('dbPath').value = dbPath;
-}
 
 function setupEventListeners() {
     document.getElementById('settingsBtn').addEventListener('click', openSettings);
@@ -41,41 +19,19 @@ function closeSettings() {
 }
 
 function saveSettings() {
-    const dbPath = document.getElementById('dbPath').value;
-    localStorage.setItem('dbPath', dbPath);
-    loadDatabase(dbPath);
+    // Здесь можно добавить логику сохранения настроек, если это необходимо
     closeSettings();
 }
 
-function loadDatabase(dbPath) {
-    const absoluteDbPath = 'https://raw.githubusercontent.com/tiqidini/ndr/main/ndrs.db';
-    
-    fetch(absoluteDbPath)
-        .then(response => response.arrayBuffer())
-        .then(buffer => {
-            if (SQL && SQL.Database) {
-                db = new SQL.Database(new Uint8Array(buffer));
-                loadData();
-            } else {
-                throw new Error('SQL.js is not properly initialized');
-            }
+function loadData() {
+    fetch('https://raw.githubusercontent.com/tiqidini/ndr/main/ndrs.json')
+        .then(response => response.json())
+        .then(data => {
+            displayData(data);
         })
         .catch(error => {
-            displayErrorMessage('Ошибка загрузки базы данных: ' + error.message);
+            displayErrorMessage('Ошибка загрузки данных: ' + error.message);
         });
-}
-
-function loadData() {
-    try {
-        const results = db.exec("SELECT code, title, year, files, notes FROM ndrs ORDER BY year DESC");
-        if (results.length > 0 && results[0].values.length > 0) {
-            displayData(results[0].values);
-        } else {
-            displayNoDataMessage();
-        }
-    } catch (error) {
-        displayErrorMessage('Ошибка выполнения запроса: ' + error.message);
-    }
 }
 
 function displayData(data) {
@@ -84,11 +40,11 @@ function displayData(data) {
     data.forEach(row => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${safeText(row[0])}</td>
-            <td>${safeText(row[1])}</td>
-            <td>${safeText(row[2])}</td>
-            <td>${safeText(row[3])}</td>
-            <td>${safeText(row[4])}</td>
+            <td>${safeText(row.code)}</td>
+            <td>${safeText(row.title)}</td>
+            <td>${safeText(row.year)}</td>
+            <td>${safeText(row.files)}</td>
+            <td>${safeText(row.notes)}</td>
         `;
         tableBody.appendChild(tr);
     });
@@ -105,11 +61,6 @@ function safeText(text) {
             "'": '&#039;'
         }[m];
     });
-}
-
-function displayNoDataMessage() {
-    const tableBody = document.getElementById('ndrTableBody');
-    tableBody.innerHTML = '<tr><td colspan="5">Нет данных в базе данных</td></tr>';
 }
 
 function displayErrorMessage(message) {
@@ -138,8 +89,4 @@ function searchTable() {
         }
         tr[i].style.display = visible ? '' : 'none';
     }
-}
-
-function openFile(fileName) {
-    alert(`Открытие файла: ${fileName}`);
 }

@@ -40,17 +40,11 @@
     <div id="settingsModal" class="modal">
         <div class="modal-content">
             <h2>Настройки</h2>
-            <label for="dbPath">Путь к базе данных:</label>
-            <input type="text" id="dbPath">
             <button id="saveSettings">Сохранить</button>
             <button id="closeSettings">Закрыть</button>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
-    <script>
-        var initSqlJsModule = initSqlJs;
-    </script>
     <script src="script.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
