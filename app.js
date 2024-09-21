@@ -1,22 +1,21 @@
 // app.js
 let db;
 
-document.getElementById('load-db').addEventListener('click', async () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.db';
-    input.onchange = async event => {
-        const file = event.target.files[0];
-        const arrayBuffer = await file.arrayBuffer();
+// Загрузка базы данных автоматически из ndrs.db
+fetch('ndrs.db')
+    .then(response => response.arrayBuffer())
+    .then(arrayBuffer => {
         const Uints = new Uint8Array(arrayBuffer);
         db = new SQL.Database(Uints);
         loadData();
-    };
-    input.click();
-});
+    })
+    .catch(error => console.error('Ошибка загрузки базы данных:', error));
+
+// Удалить обработчик загрузки через кнопку
+// document.getElementById('load-db').remove();
 
 function loadData() {
-    const res = db.exec("SELECT * FROM ваша_таблица"); // Замените на вашу таблицу
+    const res = db.exec("SELECT * FROM ndrs.db"); // Замените на вашу таблицу
     if (res.length > 0) {
         const columns = res[0].columns;
         const values = res[0].values;
