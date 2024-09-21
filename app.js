@@ -1,5 +1,7 @@
 // app.js
 let db;
+let currentPage = 1;
+const recordsPerPage = 20;
 
 // Загрузка базы данных автоматически из ndrs.db
 document.addEventListener('DOMContentLoaded', function() {
@@ -31,36 +33,15 @@ function loadData(db) {
     }
 
     try {
-        console.log("Начало выполнения loadData");
-        // Получение списка таблиц
-        const tableRes = db.exec("SELECT name FROM sqlite_master WHERE type='table';");
-        console.log("Результат запроса таблиц:", tableRes);
-        if (tableRes.length > 0) {
-            const tables = tableRes[0].values.map(row => row[0]);
-            console.log("Таблицы в базе данных:", tables);
-            
-            // Используем таблицу 'ndrs'
-            const tableName = 'ndrs';
-            if (tables.includes(tableName)) {
-                // Получаем информацию о структуре таблицы
-                const structureRes = db.exec(`PRAGMA table_info(${tableName});`);
-                console.log("Структура таблицы:", structureRes);
-
-                // Выполняем запрос к таблице
-                const res = db.exec(`SELECT * FROM ${tableName} LIMIT 10;`);
-                console.log("Результат запроса данных:", res);
-                if (res.length > 0 && res[0].values.length > 0) {
-                    const columns = res[0].columns;
-                    const values = res[0].values;
-                    renderTable(columns, values);
-                } else {
-                    console.log(`Таблица ${tableName} пуста или запрос не вернул результатов`);
-                }
-            } else {
-                console.log(`Таблица ${tableName} не найдена в базе данных`);
-            }
+        const tableName = 'ndrs';
+        const res = db.exec(`SELECT * FROM ${tableName};`);
+        if (res.length > 0 && res[0].values.length > 0) {
+            const columns = res[0].columns;
+            const allValues = res[0].values;
+            renderTable(columns, allValues);
+            setupPagination(allValues.length);
         } else {
-            console.log("В базе данных нет таблиц");
+            console.log(`Таблица ${tableName} пуста или запрос не вернул результатов`);
         }
     } catch (error) {
         console.error('Ошибка при выполнении SQL-запроса:', error);
@@ -74,27 +55,24 @@ if (tableRes.length > 0) {
     console.log("Таблицы в базе данных:", tables);
 }
 
-function renderTable(columns, values) {
-    console.log("Начало рендеринга таблицы");
-    console.log("Колонки:", columns);
-    console.log("Значения:", values);
-
+function renderTable(columns, allValues) {
     const thead = document.querySelector('#data-table thead tr');
     const tbody = document.querySelector('#data-table tbody');
     
-    // Очистить существующие данные
     thead.innerHTML = '';
     tbody.innerHTML = '';
 
-    // Создать заголовки
     columns.forEach(col => {
         const th = document.createElement('th');
         th.textContent = col;
         thead.appendChild(th);
     });
 
-    // Создать строки данных
-    values.forEach(row => {
+    const startIndex = (currentPage - 1) * recordsPerPage;
+    const endIndex = startIndex + recordsPerPage;
+    const pageValues = allValues.slice(startIndex, endIndex);
+
+    pageValues.forEach(row => {
         const tr = document.createElement('tr');
         row.forEach((cell, idx) => {
             const td = document.createElement('td');
@@ -104,6 +82,22 @@ function renderTable(columns, values) {
         });
         tbody.appendChild(tr);
     });
+}
 
-    console.log("Таблица отрендерена");
+function setupPagination(totalRecords) {
+    const totalPages = Math.ceil(totalRecords / recordsPerPage);
+    const paginationContainer = document.createElement('div');
+    paginationContainer.className = 'pagination';
+    
+    for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.addEventListener('click', () => {
+            currentPage = i;
+            loadData(db);
+        });
+        paginationContainer.appendChild(pageButton);
+    }
+    
+    document.body.appendChild(paginationContainer);
 }
