@@ -5,12 +5,15 @@ let db;
 document.addEventListener('DOMContentLoaded', function() {
     initSqlJs({ locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${file}` })
         .then(SQL => {
+            console.log("SQL.js инициализирован успешно");
             // Загрузка базы данных автоматически из ndrs.db
             fetch('ndrs.db')
                 .then(response => response.arrayBuffer())
                 .then(arrayBuffer => {
+                    console.log("База данных загружена, размер:", arrayBuffer.byteLength);
                     const Uints = new Uint8Array(arrayBuffer);
                     const db = new SQL.Database(Uints);
+                    console.log("База данных инициализирована");
                     loadData(db);
                 })
                 .catch(error => console.error('Ошибка загрузки базы данных:', error));
@@ -28,14 +31,16 @@ function loadData(db) {
     }
 
     try {
+        console.log("Начало выполнения loadData");
         // Получение списка таблиц
         const tableRes = db.exec("SELECT name FROM sqlite_master WHERE type='table';");
+        console.log("Результат запроса таблиц:", tableRes);
         if (tableRes.length > 0) {
             const tables = tableRes[0].values.map(row => row[0]);
             console.log("Таблицы в базе данных:", tables);
             
-            // Используем таблицу 'records'
-            const tableName = 'records';
+            // Используем таблицу 'ndrs'
+            const tableName = 'ndrs';
             if (tables.includes(tableName)) {
                 // Получаем информацию о структуре таблицы
                 const structureRes = db.exec(`PRAGMA table_info(${tableName});`);
@@ -43,6 +48,7 @@ function loadData(db) {
 
                 // Выполняем запрос к таблице
                 const res = db.exec(`SELECT * FROM ${tableName} LIMIT 10;`);
+                console.log("Результат запроса данных:", res);
                 if (res.length > 0 && res[0].values.length > 0) {
                     const columns = res[0].columns;
                     const values = res[0].values;
@@ -69,6 +75,10 @@ if (tableRes.length > 0) {
 }
 
 function renderTable(columns, values) {
+    console.log("Начало рендеринга таблицы");
+    console.log("Колонки:", columns);
+    console.log("Значения:", values);
+
     const thead = document.querySelector('#data-table thead tr');
     const tbody = document.querySelector('#data-table tbody');
     
@@ -94,4 +104,6 @@ function renderTable(columns, values) {
         });
         tbody.appendChild(tr);
     });
+
+    console.log("Таблица отрендерена");
 }
