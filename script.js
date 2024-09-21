@@ -51,16 +51,8 @@ function loadDatabase(dbPath) {
     const absoluteDbPath = 'https://raw.githubusercontent.com/tiqidini/ndr/main/ndrs.db';
     
     fetch(absoluteDbPath)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.arrayBuffer();
-        })
+        .then(response => response.arrayBuffer())
         .then(buffer => {
-            if (buffer.byteLength === 0) {
-                throw new Error('Database file is empty');
-            }
             if (SQL && SQL.Database) {
                 db = new SQL.Database(new Uint8Array(buffer));
                 loadData();
@@ -77,14 +69,7 @@ function loadData() {
     try {
         const results = db.exec("SELECT code, title, year, files, notes FROM ndrs ORDER BY year DESC");
         if (results.length > 0 && results[0].values.length > 0) {
-            const data = results[0].values.map(row => ({
-                code: row[0],
-                title: row[1],
-                year: row[2],
-                files: row[3],
-                notes: row[4]
-            }));
-            displayData(data);
+            displayData(results[0].values);
         } else {
             displayNoDataMessage();
         }
@@ -99,24 +84,27 @@ function displayData(data) {
     data.forEach(row => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${escapeHtml(row.code)}</td>
-            <td>${escapeHtml(row.title)}</td>
-            <td>${escapeHtml(row.year)}</td>
-            <td>${escapeHtml(row.files)}</td>
-            <td>${escapeHtml(row.notes)}</td>
+            <td>${safeText(row[0])}</td>
+            <td>${safeText(row[1])}</td>
+            <td>${safeText(row[2])}</td>
+            <td>${safeText(row[3])}</td>
+            <td>${safeText(row[4])}</td>
         `;
         tableBody.appendChild(tr);
     });
 }
 
-function escapeHtml(unsafe) {
-    if (unsafe == null) return '';
-    return String(unsafe)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+function safeText(text) {
+    if (text == null) return '';
+    return String(text).replace(/[&<>"']/g, function(m) {
+        return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        }[m];
+    });
 }
 
 function displayNoDataMessage() {
@@ -126,7 +114,7 @@ function displayNoDataMessage() {
 
 function displayErrorMessage(message) {
     const tableBody = document.getElementById('ndrTableBody');
-    tableBody.innerHTML = `<tr><td colspan="5">${escapeHtml(message)}</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="5">${safeText(message)}</td></tr>`;
 }
 
 function searchTable() {
