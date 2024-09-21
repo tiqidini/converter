@@ -7,26 +7,10 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192x192.png">
-    <style>
-        #errorContainer {
-            color: red;
-            font-weight: bold;
-            padding: 10px;
-            background-color: #ffeeee;
-            border: 1px solid red;
-            margin: 10px 0;
-        }
-    </style>
 </head>
 <body>
-    <div id="jsCheck" style="color: red; font-weight: bold;">
-        Если вы видите это сообщение, значит JavaScript не работает.
-    </div>
-    <div id="logContainer" style="display: none; white-space: pre-wrap; font-family: monospace; padding: 10px; background-color: #f0f0f0;"></div>
-    <div id="errorContainer" style="color: red; font-weight: bold; padding: 10px;"></div>
     <header>
         <h1>НДР Просмотр</h1>
-        <button id="refreshBtn">Обновить</button>
         <button id="settingsBtn">Настройки</button>
     </header>
 
@@ -65,52 +49,13 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
     <script>
-        if (typeof initSqlJs === 'undefined') {
-            console.error('SQL.js не загрузился корректно');
-            document.body.innerHTML = '<div style="color: red; font-weight: bold;">Ошибка загрузки SQL.js. Пожалуйста, проверьте подключение к интернету и перезагрузите страницу.</div>';
-        } else {
-            var initSqlJsModule = initSqlJs;
-        }
+        var initSqlJsModule = initSqlJs;
     </script>
     <script src="script.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('service-worker.js');
         }
-    </script>
-    <script>
-        document.getElementById('jsCheck').style.display = 'none';
-    </script>
-    <script>
-        function showError(message) {
-            const errorContainer = document.getElementById('errorContainer');
-            errorContainer.textContent = message;
-            errorContainer.style.display = 'block';
-        }
-
-        window.onerror = function(message, source, lineno, colno, error) {
-            console.error('Global error:', message, 'at', source, lineno, colno, error);
-            showError(`Глобальная ошибка: ${message} в ${source}:${lineno}:${colno}`);
-        };
-    </script>
-    <script>
-        // Добавьте эту функцию для отображения ошибок на странице
-        function showError(message) {
-            document.getElementById('errorContainer').textContent = message;
-        }
-
-        // Переопределите console.error для отображения ошибок на странице
-        const originalConsoleError = console.error;
-        console.error = function() {
-            showError(Array.from(arguments).join(' '));
-            originalConsoleError.apply(console, arguments);
-        };
-    </script>
-    <script>
-        window.onerror = function(message, source, lineno, colno, error) {
-            console.error('Global error:', message, 'at', source, lineno, colno, error);
-            showError('Глобальная ошибка: ' + message);
-        };
     </script>
 </body>
 </html>
