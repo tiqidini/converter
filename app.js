@@ -22,8 +22,13 @@ document.addEventListener('DOMContentLoaded', function() {
 // document.getElementById('load-db').remove();
 
 function loadData(db) {
-    // Получение списка таблиц
+    if (!db) {
+        console.error('База данных не инициализирована');
+        return;
+    }
+
     try {
+        // Получение списка таблиц
         const tableRes = db.exec("SELECT name FROM sqlite_master WHERE type='table';");
         if (tableRes.length > 0) {
             const tables = tableRes[0].values.map(row => row[0]);
@@ -31,13 +36,22 @@ function loadData(db) {
             
             // Используем таблицу 'records'
             const tableName = 'records';
-            const res = db.exec(`SELECT * FROM ${tableName}`);
-            if (res.length > 0) {
-                const columns = res[0].columns;
-                const values = res[0].values;
-                renderTable(columns, values);
+            if (tables.includes(tableName)) {
+                // Получаем информацию о структуре таблицы
+                const structureRes = db.exec(`PRAGMA table_info(${tableName});`);
+                console.log("Структура таблицы:", structureRes);
+
+                // Выполняем запрос к таблице
+                const res = db.exec(`SELECT * FROM ${tableName} LIMIT 10;`);
+                if (res.length > 0 && res[0].values.length > 0) {
+                    const columns = res[0].columns;
+                    const values = res[0].values;
+                    renderTable(columns, values);
+                } else {
+                    console.log(`Таблица ${tableName} пуста или запрос не вернул результатов`);
+                }
             } else {
-                console.log(`Таблица ${tableName} пуста`);
+                console.log(`Таблица ${tableName} не найдена в базе данных`);
             }
         } else {
             console.log("В базе данных нет таблиц");
@@ -74,7 +88,7 @@ function renderTable(columns, values) {
         const tr = document.createElement('tr');
         row.forEach((cell, idx) => {
             const td = document.createElement('td');
-            td.textContent = cell;
+            td.textContent = cell !== null ? cell.toString() : '';
             td.setAttribute('data-label', columns[idx]);
             tr.appendChild(td);
         });
