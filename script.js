@@ -25,11 +25,19 @@ function saveSettings() {
 
 function loadData() {
     fetch('https://raw.githubusercontent.com/tiqidini/ndr/main/ndrs.json')
-        .then(response => response.json())
-        .then(data => {
-            displayData(data);
+        .then(response => response.text())
+        .then(text => {
+            try {
+                const data = JSON.parse(text);
+                displayData(data);
+            } catch (error) {
+                console.error('JSON parsing error:', error);
+                console.log('Raw JSON text:', text);
+                displayErrorMessage('Ошибка парсинга JSON: ' + error.message);
+            }
         })
         .catch(error => {
+            console.error('Fetch error:', error);
             displayErrorMessage('Ошибка загрузки данных: ' + error.message);
         });
 }
@@ -66,6 +74,7 @@ function safeText(text) {
 function displayErrorMessage(message) {
     const tableBody = document.getElementById('ndrTableBody');
     tableBody.innerHTML = `<tr><td colspan="5">${safeText(message)}</td></tr>`;
+    console.error(message);
 }
 
 function searchTable() {
