@@ -24,20 +24,14 @@ function saveSettings() {
 }
 
 function loadData() {
-    const data = localStorage.getItem('ndrData');
-    if (data) {
-        displayData(JSON.parse(data));
-    } else {
-        fetch('https://raw.githubusercontent.com/tiqidini/ndr/main/ndrs.json')
-            .then(response => response.json())
-            .then(data => {
-                localStorage.setItem('ndrData', JSON.stringify(data));
-                displayData(data);
-            })
-            .catch(error => {
-                displayErrorMessage('Ошибка загрузки данных: ' + error.message);
-            });
-    }
+    fetch('https://raw.githubusercontent.com/tiqidini/ndr/main/ndrs.json')
+        .then(response => response.json())
+        .then(data => {
+            displayData(data);
+        })
+        .catch(error => {
+            displayErrorMessage('Ошибка загрузки данных: ' + error.message);
+        });
 }
 
 function displayData(data) {
