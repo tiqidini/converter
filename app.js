@@ -15,12 +15,19 @@ fetch('ndrs.db')
 // document.getElementById('load-db').remove();
 
 function loadData() {
-    const res = db.exec("SELECT * FROM ndrs.db"); // Замените на вашу таблицу
+    const res = db.exec("SELECT * FROM ndrs"); // Замените 'your_table_name' на имя вашей таблицы
     if (res.length > 0) {
         const columns = res[0].columns;
         const values = res[0].values;
         renderTable(columns, values);
     }
+}
+
+// Добавьте этот код для получения списка таблиц, если вы не знаете имя вашей таблицы
+const tableRes = db.exec("SELECT name FROM sqlite_master WHERE type='table';");
+if (tableRes.length > 0) {
+    const tables = tableRes[0].values.map(row => row[0]);
+    console.log("Таблицы в базе данных:", tables);
 }
 
 function renderTable(columns, values) {
