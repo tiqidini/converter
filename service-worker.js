@@ -4,6 +4,7 @@ const urlsToCache = [
     'index.html',
     'styles.css',
     'script.js',
+    'ndrs.db',
     'icon-192x192.png',
     'icon-512x512.png',
     'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js',

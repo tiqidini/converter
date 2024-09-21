@@ -52,9 +52,8 @@ function saveSettings() {
 
 function loadDatabase(dbPath) {
     console.log('Loading database from:', dbPath);
-    const rawGitHubUrl = 'https://raw.githubusercontent.com/tiqidini/ndr/main/ndrs.db';
     
-    fetch(rawGitHubUrl)
+    fetch(dbPath)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

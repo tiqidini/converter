@@ -49,7 +49,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
     <script>
-        var initSqlJsModule = initSqlJs;
+        var initSqlJsModule = initSqlJs || window.initSqlJs;
     </script>
     <script src="script.js"></script>
     <script>
