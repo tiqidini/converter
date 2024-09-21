@@ -33,6 +33,7 @@ function setupEventListeners() {
     document.getElementById('closeSettings').addEventListener('click', closeSettings);
     document.getElementById('saveSettings').addEventListener('click', saveSettings);
     document.getElementById('searchInput').addEventListener('input', searchTable);
+    document.getElementById('refreshBtn').addEventListener('click', refreshData);
 }
 
 function openSettings() {
@@ -81,7 +82,7 @@ function loadData() {
     try {
         const results = db.exec("SELECT code, title, year, files, notes FROM ndrs ORDER BY year DESC");
         console.log('Query executed successfully');
-        if (results.length > 0) {
+        if (results.length > 0 && results[0].values.length > 0) {
             const data = results[0].values.map(row => ({
                 code: row[0],
                 title: row[1],
@@ -93,9 +94,11 @@ function loadData() {
             displayData(data);
         } else {
             console.log('No data found in the database');
+            displayNoDataMessage();
         }
     } catch (error) {
         console.error('Error executing query:', error);
+        displayErrorMessage(error);
     }
 }
 
@@ -141,4 +144,14 @@ function searchTable() {
         }
         tr[i].style.display = visible ? '' : 'none';
     }
+}
+
+function displayNoDataMessage() {
+    const tableBody = document.getElementById('ndrTableBody');
+    tableBody.innerHTML = '<tr><td colspan="5">Нет данных в базе данных</td></tr>';
+}
+
+function displayErrorMessage(error) {
+    const tableBody = document.getElementById('ndrTableBody');
+    tableBody.innerHTML = `<tr><td colspan="5">Ошибка при загрузке данных: ${error.message}</td></tr>`;
 }
