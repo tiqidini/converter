@@ -168,8 +168,9 @@ function displayNoDataMessage() {
 }
 
 function displayErrorMessage(error) {
+    console.error('Error occurred:', error);
     const tableBody = document.getElementById('ndrTableBody');
-    tableBody.innerHTML = `<tr><td colspan="5">Ошибка при загрузке данных: ${error.message}</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="5">Произошла ошибка при загрузке данных: ${escapeHtml(error.message)}</td></tr>`;
 }
 
 // Добавьте эту функцию в конец файла
@@ -190,6 +191,10 @@ function refreshData() {
 })();
 
 function escapeHtml(unsafe) {
+    if (typeof unsafe !== 'string') {
+        console.warn('escapeHtml received non-string input:', unsafe);
+        return String(unsafe);
+    }
     return unsafe
          .replace(/&/g, "&amp;")
          .replace(/</g, "&lt;")

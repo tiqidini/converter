@@ -4,7 +4,6 @@ const urlsToCache = [
     'index.html',
     'styles.css',
     'script.js',
-    'ndrs.db',
     'icon-192x192.png',
     'icon-512x512.png',
     'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js',
@@ -32,6 +31,9 @@ self.addEventListener('fetch', event => {
             fetch(event.request, {
                 mode: 'cors',
                 credentials: 'omit'
+            }).catch(error => {
+                console.error('Fetch error:', error);
+                return new Response('Error fetching resource', { status: 500, statusText: error.message });
             })
         );
     } else {
