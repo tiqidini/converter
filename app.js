@@ -23,14 +23,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function loadData(db) {
     // Получение списка таблиц
-    const tableRes = db.exec("SELECT name FROM sqlite_master WHERE type='table';");
-    if (tableRes.length > 0) {
-        const tables = tableRes[0].values.map(row => row[0]);
-        console.log("Таблицы в базе данных:", tables);
-        
-        // Используем первую таблицу из списка
-        if (tables.length > 0) {
-            const tableName = tables[0];
+    try {
+        const tableRes = db.exec("SELECT name FROM sqlite_master WHERE type='table';");
+        if (tableRes.length > 0) {
+            const tables = tableRes[0].values.map(row => row[0]);
+            console.log("Таблицы в базе данных:", tables);
+            
+            // Используем таблицу 'records'
+            const tableName = 'records';
             const res = db.exec(`SELECT * FROM ${tableName}`);
             if (res.length > 0) {
                 const columns = res[0].columns;
@@ -42,8 +42,8 @@ function loadData(db) {
         } else {
             console.log("В базе данных нет таблиц");
         }
-    } else {
-        console.log("Не удалось получить список таблиц");
+    } catch (error) {
+        console.error('Ошибка при выполнении SQL-запроса:', error);
     }
 }
 
