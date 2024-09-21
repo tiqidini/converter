@@ -1,0 +1,31 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NDRS PWA</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <header>
+        <h1>Просмотр записей</h1>
+        <button id="load-db">Загрузить базу данных</button>
+    </header>
+    <main>
+        <table id="data-table">
+            <thead>
+                <tr>
+                    <!-- Колонки будут динамически загружены -->
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Данные будут динамически загружены -->
+            </tbody>
+        </table>
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
