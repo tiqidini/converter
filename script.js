@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initSqlJs() {
     console.log('Initializing SQL.js');
-    initSqlJs(config).then(function(sqlJs) {
+    initSqlJsModule(config).then(function(sqlJs) {
         console.log('SQL.js initialized successfully');
         SQL = sqlJs;
         loadDatabase(localStorage.getItem('dbPath') || 'ndrs.db');
@@ -64,8 +64,12 @@ function loadDatabase(dbPath) {
         })
         .then(buffer => {
             console.log('Creating SQL database from buffer');
-            db = new SQL.Database(new Uint8Array(buffer));
-            loadData();
+            if (SQL && SQL.Database) {
+                db = new SQL.Database(new Uint8Array(buffer));
+                loadData();
+            } else {
+                throw new Error('SQL.js is not properly initialized');
+            }
         })
         .catch(error => {
             console.error('Error loading database:', error);

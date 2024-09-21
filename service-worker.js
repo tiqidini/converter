@@ -1,5 +1,6 @@
 const CACHE_NAME = 'ndr-viewer-v1';
 const urlsToCache = [
+    './',
     'index.html',
     'styles.css',
     'script.js',
