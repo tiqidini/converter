@@ -31,17 +31,13 @@ function loadData() {
 
 function createTable(data) {
   const table = document.createElement('table');
-  table.style.fontFamily = 'Courier New';
-  table.style.borderCollapse = 'collapse';
-  table.style.width = '100%';
+  table.className = 'data-table';
 
   const thead = document.createElement('thead');
   const headerRow = document.createElement('tr');
-  ['Название', 'Категория', 'Статус'].forEach(headerText => {
+  ['ID', 'Название', 'Категория', 'Статус', 'Дата создания', 'Дата обновления'].forEach(headerText => {
     const th = document.createElement('th');
     th.textContent = headerText;
-    th.style.border = '1px solid black';
-    th.style.padding = '5px';
     headerRow.appendChild(th);
   });
   thead.appendChild(headerRow);
@@ -50,11 +46,9 @@ function createTable(data) {
   const tbody = document.createElement('tbody');
   data.forEach(item => {
     const row = document.createElement('tr');
-    ['name', 'category', 'status'].forEach(key => {
+    [item[0], item[1], item[2], item[3], item[4], item[5]].forEach(cellText => {
       const td = document.createElement('td');
-      td.textContent = item[key];
-      td.style.border = '1px solid black';
-      td.style.padding = '5px';
+      td.textContent = cellText;
       row.appendChild(td);
     });
     tbody.appendChild(row);
@@ -78,8 +72,46 @@ function initializeTable(data) {
     return;
   }
   
+  // Добавляем стили
+  const style = document.createElement('style');
+  style.textContent = `
+    .data-table {
+      font-family: 'Courier New', Courier, monospace;
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      display: block;
+    }
+    .data-table th, .data-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    .data-table th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+    .data-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .data-table tr:hover {
+      background-color: #f5f5f5;
+    }
+    #table-container {
+      overflow-x: auto;
+    }
+    .filter-container {
+      margin-bottom: 15px;
+    }
+    .filter-container label, .filter-container input {
+      margin-right: 10px;
+    }
+  `;
+  document.head.appendChild(style);
+  
   const filterContainer = document.createElement('div');
-  filterContainer.style.marginBottom = '10px';
+  filterContainer.className = 'filter-container';
   
   const filters = [
     { name: 'status', label: 'Статус' },
