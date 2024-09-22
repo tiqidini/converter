@@ -106,6 +106,8 @@ function setupPagination(totalRecords) {
 function createTable(data) {
     const table = document.createElement('table');
     table.style.fontFamily = 'Courier New';
+    table.style.borderCollapse = 'collapse'; // Добавляем видимые границы
+    table.style.width = '100%';
 
     // Создаем заголовок таблицы
     const thead = document.createElement('thead');
@@ -113,6 +115,8 @@ function createTable(data) {
     ['Название', 'Категория', 'Статус'].forEach(headerText => {
         const th = document.createElement('th');
         th.textContent = headerText;
+        th.style.border = '1px solid black'; // Добавляем границы для заголовков
+        th.style.padding = '5px';
         headerRow.appendChild(th);
     });
     thead.appendChild(headerRow);
@@ -125,6 +129,8 @@ function createTable(data) {
         ['name', 'category', 'status'].forEach(key => {
             const td = document.createElement('td');
             td.textContent = item[key];
+            td.style.border = '1px solid black'; // Добавляем границы для ячеек
+            td.style.padding = '5px';
             row.appendChild(td);
         });
         tbody.appendChild(row);
@@ -162,14 +168,61 @@ function initializeTable(data) {
     const tableWrapper = document.createElement('div');
     container.appendChild(tableWrapper);
 
+    // Создаем быстрые фильтры
+    const filterContainer = document.createElement('div');
+    filterContainer.style.marginBottom = '10px';
+    
+    const filters = [
+        { name: 'status', label: 'Статус' },
+        { name: 'category', label: 'Категория' },
+        // Добавьте другие фильтры по необходимости
+    ];
+
+    filters.forEach(filter => {
+        const select = document.createElement('select');
+        select.id = `filter-${filter.name}`;
+        select.innerHTML = `<option value="">Все ${filter.label}</option>`;
+        
+        // Получаем уникальные значения для фильтра
+        const uniqueValues = [...new Set(data.map(item => item[filter.name]))];
+        uniqueValues.forEach(value => {
+            select.innerHTML += `<option value="${value}">${value}</option>`;
+        });
+        
+        const label = document.createElement('label');
+        label.textContent = `${filter.label}: `;
+        label.appendChild(select);
+        
+        filterContainer.appendChild(label);
+        filterContainer.appendChild(document.createTextNode(' ')); // Пробел между фильтрами
+    });
+
+    container.appendChild(filterContainer);
+
     function updateTable() {
-        const filteredData = filterData(data, searchInput.value, categorySelect.value);
+        let filteredData = data;
+        
+        // Применяем все фильтры
+        filters.forEach(filter => {
+            const selectValue = document.getElementById(`filter-${filter.name}`).value;
+            if (selectValue) {
+                filteredData = filteredData.filter(item => item[filter.name] === selectValue);
+            }
+        });
+        
+        // Применяем поиск
+        filteredData = filteredData.filter(item => 
+            item.name.toLowerCase().includes(searchInput.value.toLowerCase())
+        );
+
         tableWrapper.innerHTML = '';
         tableWrapper.appendChild(createTable(filteredData));
     }
 
-    searchInput.addEventListener('input', updateTable);
-    categorySelect.addEventListener('change', updateTable);
+    // Добавляем слушатели событий для новых фильтров
+    filters.forEach(filter => {
+        document.getElementById(`filter-${filter.name}`).addEventListener('change', updateTable);
+    });
 
     updateTable();
 }
