@@ -101,3 +101,83 @@ function setupPagination(totalRecords) {
     
     document.body.appendChild(paginationContainer);
 }
+
+// Функция для создания таблицы
+function createTable(data) {
+    const table = document.createElement('table');
+    table.style.fontFamily = 'Courier New';
+
+    // Создаем заголовок таблицы
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    ['Название', 'Категория', 'Статус'].forEach(headerText => {
+        const th = document.createElement('th');
+        th.textContent = headerText;
+        headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    // Создаем тело таблицы
+    const tbody = document.createElement('tbody');
+    data.forEach(item => {
+        const row = document.createElement('tr');
+        ['name', 'category', 'status'].forEach(key => {
+            const td = document.createElement('td');
+            td.textContent = item[key];
+            row.appendChild(td);
+        });
+        tbody.appendChild(row);
+    });
+    table.appendChild(tbody);
+
+    return table;
+}
+
+// Функция для фильтрации данных
+function filterData(data, searchText, category) {
+    return data.filter(item => 
+        item.name.toLowerCase().includes(searchText.toLowerCase()) &&
+        (category === '' || item.category === category)
+    );
+}
+
+// Инициализация таблицы и элементов управления
+function initializeTable(data) {
+    const container = document.getElementById('table-container');
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.placeholder = 'Поиск по названию';
+
+    const categorySelect = document.createElement('select');
+    categorySelect.innerHTML = `
+        <option value="">Все категории</option>
+        <option value="category1">Категория 1</option>
+        <option value="category2">Категория 2</option>
+    `;
+
+    container.appendChild(searchInput);
+    container.appendChild(categorySelect);
+
+    const tableWrapper = document.createElement('div');
+    container.appendChild(tableWrapper);
+
+    function updateTable() {
+        const filteredData = filterData(data, searchInput.value, categorySelect.value);
+        tableWrapper.innerHTML = '';
+        tableWrapper.appendChild(createTable(filteredData));
+    }
+
+    searchInput.addEventListener('input', updateTable);
+    categorySelect.addEventListener('change', updateTable);
+
+    updateTable();
+}
+
+// Загрузка данных и инициализация таблицы
+fetch('your-data-url.json')
+    .then(response => response.json())
+    .then(data => {
+        initializeTable(data);
+    })
+    .catch(error => console.error('Error loading data:', error));
