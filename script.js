@@ -3,14 +3,13 @@ const inputUnit = document.getElementById('input-unit');
 const convertBtn = document.getElementById('convert-btn');
 const results = document.getElementById('results');
 
-const units = ['dbm', 'w', 'mw', 'uw', 'nw', 'kw'];
+const units = ['dbm', 'w', 'mw', 'uw', 'nw'];
 const unitLabels = {
     'dbm': 'dBm',
     'w': 'Вт',
     'mw': 'мВт',
     'uw': 'мкВт',
-    'nw': 'нВт',
-    'kw': 'кВт'
+    'nw': 'нВт'
 };
 
 function convertPower(value, fromUnit, toUnit) {
@@ -32,9 +31,6 @@ function convertPower(value, fromUnit, toUnit) {
         case 'nw':
             watts = value / 1000000000;
             break;
-        case 'kw':
-            watts = value * 1000;
-            break;
     }
 
     // Конвертация из ватт в нужную единицу
@@ -49,36 +45,28 @@ function convertPower(value, fromUnit, toUnit) {
             return watts * 1000000;
         case 'nw':
             return watts * 1000000000;
-        case 'kw':
-            return watts / 1000;
     }
 }
 
-function formatResult(value, unit) {
-    if (unit === 'dbm') {
-        return value.toFixed(2);
-    } else {
-        // Используем более понятное форматирование
-        const absValue = Math.abs(value);
-        if (absValue >= 1e9) {
-            return (value / 1e9).toFixed(2) + ' млрд';
-        } else if (absValue >= 1e6) {
-            return (value / 1e6).toFixed(2) + ' млн';
-        } else if (absValue >= 1e3) {
-            return (value / 1e3).toFixed(2) + ' тыс';
-        } else if (absValue < 1e-6) {
-            return (value * 1e9).toFixed(2) + ' нано';
-        } else if (absValue < 1e-3) {
-            return (value * 1e6).toFixed(2) + ' микро';
-        } else if (absValue < 1) {
-            return (value * 1e3).toFixed(2) + ' милли';
-        } else {
-            return value.toLocaleString('ru-RU', { 
-                minimumFractionDigits: 2, 
-                maximumFractionDigits: 2 
-            });
+function formatResult(value) {
+    return value.toLocaleString('ru-RU', { 
+        minimumFractionDigits: 2, 
+        maximumFractionDigits: 6 
+    });
+}
+
+function animateValue(element, start, end, duration) {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const current = start + progress * (end - start);
+        element.textContent = formatResult(current);
+        if (progress < 1) {
+            window.requestAnimationFrame(step);
         }
-    }
+    };
+    window.requestAnimationFrame(step);
 }
 
 convertBtn.addEventListener('click', () => {
@@ -94,23 +82,22 @@ convertBtn.addEventListener('click', () => {
     units.forEach(unit => {
         if (unit !== fromUnit) {
             const result = convertPower(value, fromUnit, unit);
-            const formattedResult = formatResult(result, unit);
-            let displayUnit = unitLabels[unit];
-            if (formattedResult.includes('млрд') || formattedResult.includes('млн') || 
-                formattedResult.includes('тыс') || formattedResult.includes('милли') || 
-                formattedResult.includes('микро') || formattedResult.includes('нано')) {
-                displayUnit = unit === 'w' ? 'Вт' : unit;
-            }
             resultHtml += `
                 <div class="result-item">
                     <span class="unit">${unitLabels[unit]}:</span>
-                    <span class="value">${formattedResult} ${displayUnit}</span>
+                    <span class="value" data-value="${result}">0</span>
                 </div>
             `;
         }
     });
 
     results.innerHTML = resultHtml;
+
+    // Анимация результатов
+    document.querySelectorAll('.value').forEach(element => {
+        const endValue = parseFloat(element.dataset.value);
+        animateValue(element, 0, endValue, 1000);
+    });
 });
 
 // Автоматическая конвертация при изменении значения или единицы измерения
