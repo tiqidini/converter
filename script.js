@@ -58,7 +58,15 @@ function formatResult(value, unit) {
     if (unit === 'dbm') {
         return value.toFixed(2);
     } else {
-        return value.toExponential(4);
+        // Используем toLocaleString для форматирования чисел
+        if (Math.abs(value) < 0.001 || Math.abs(value) >= 1000000) {
+            return value.toExponential(4);
+        } else {
+            return value.toLocaleString('ru-RU', { 
+                minimumFractionDigits: 2, 
+                maximumFractionDigits: 6 
+            });
+        }
     }
 }
 
@@ -78,7 +86,7 @@ convertBtn.addEventListener('click', () => {
             resultHtml += `
                 <div class="result-item">
                     <span class="unit">${unitLabels[unit]}:</span>
-                    <span class="value">${formatResult(result, unit)}</span>
+                    <span class="value">${formatResult(result, unit)} ${unitLabels[unit]}</span>
                 </div>
             `;
         }
