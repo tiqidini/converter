@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конвертер мощности</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div class="container">
+        <h1>Конвертер мощности</h1>
+        <div class="converter">
+            <input type="number" id="input-value" placeholder="Введите значение">
+            <select id="input-unit">
+                <option value="dbm">dBm</option>
+                <option value="w">Вт</option>
+                <option value="mw">мВт</option>
+                <option value="uw">мкВт</option>
+                <option value="nw">нВт</option>
+                <option value="kw">кВт</option>
+            </select>
+            <button id="convert-btn">Конвертировать</button>
+        </div>
+        <div id="results"></div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
