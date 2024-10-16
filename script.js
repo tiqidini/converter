@@ -4,9 +4,17 @@ const convertBtn = document.getElementById('convert-btn');
 const results = document.getElementById('results');
 
 const units = ['dbm', 'w', 'mw', 'uw', 'nw', 'kw'];
+const unitLabels = {
+    'dbm': 'dBm',
+    'w': 'Вт',
+    'mw': 'мВт',
+    'uw': 'мкВт',
+    'nw': 'нВт',
+    'kw': 'кВт'
+};
 
 function convertPower(value, fromUnit, toUnit) {
-    // Сначала конвертируем в ватты
+    // Конвертация в ватты
     let watts;
     switch (fromUnit) {
         case 'dbm':
@@ -29,7 +37,7 @@ function convertPower(value, fromUnit, toUnit) {
             break;
     }
 
-    // Затем конвертируем ватты в нужную единицу
+    // Конвертация из ватт в нужную единицу
     switch (toUnit) {
         case 'dbm':
             return 10 * math.log10(watts * 1000);
@@ -46,6 +54,14 @@ function convertPower(value, fromUnit, toUnit) {
     }
 }
 
+function formatResult(value, unit) {
+    if (unit === 'dbm') {
+        return value.toFixed(2);
+    } else {
+        return value.toExponential(4);
+    }
+}
+
 convertBtn.addEventListener('click', () => {
     const value = parseFloat(inputValue.value);
     const fromUnit = inputUnit.value;
@@ -59,12 +75,21 @@ convertBtn.addEventListener('click', () => {
     units.forEach(unit => {
         if (unit !== fromUnit) {
             const result = convertPower(value, fromUnit, unit);
-            resultHtml += `<p>${result.toExponential(4)} ${unit}</p>`;
+            resultHtml += `
+                <div class="result-item">
+                    <span class="unit">${unitLabels[unit]}:</span>
+                    <span class="value">${formatResult(result, unit)}</span>
+                </div>
+            `;
         }
     });
 
     results.innerHTML = resultHtml;
 });
+
+// Автоматическая конвертация при изменении значения или единицы измерения
+inputValue.addEventListener('input', () => convertBtn.click());
+inputUnit.addEventListener('change', () => convertBtn.click());
 
 // Регистрация Service Worker
 if ('serviceWorker' in navigator) {
