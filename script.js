@@ -58,13 +58,24 @@ function formatResult(value, unit) {
     if (unit === 'dbm') {
         return value.toFixed(2);
     } else {
-        // Используем toLocaleString для форматирования чисел
-        if (Math.abs(value) < 0.001 || Math.abs(value) >= 1000000) {
-            return value.toExponential(4);
+        // Используем более понятное форматирование
+        const absValue = Math.abs(value);
+        if (absValue >= 1e9) {
+            return (value / 1e9).toFixed(2) + ' млрд';
+        } else if (absValue >= 1e6) {
+            return (value / 1e6).toFixed(2) + ' млн';
+        } else if (absValue >= 1e3) {
+            return (value / 1e3).toFixed(2) + ' тыс';
+        } else if (absValue < 1e-6) {
+            return (value * 1e9).toFixed(2) + ' нано';
+        } else if (absValue < 1e-3) {
+            return (value * 1e6).toFixed(2) + ' микро';
+        } else if (absValue < 1) {
+            return (value * 1e3).toFixed(2) + ' милли';
         } else {
             return value.toLocaleString('ru-RU', { 
                 minimumFractionDigits: 2, 
-                maximumFractionDigits: 6 
+                maximumFractionDigits: 2 
             });
         }
     }
@@ -83,10 +94,17 @@ convertBtn.addEventListener('click', () => {
     units.forEach(unit => {
         if (unit !== fromUnit) {
             const result = convertPower(value, fromUnit, unit);
+            const formattedResult = formatResult(result, unit);
+            let displayUnit = unitLabels[unit];
+            if (formattedResult.includes('млрд') || formattedResult.includes('млн') || 
+                formattedResult.includes('тыс') || formattedResult.includes('милли') || 
+                formattedResult.includes('микро') || formattedResult.includes('нано')) {
+                displayUnit = unit === 'w' ? 'Вт' : unit;
+            }
             resultHtml += `
                 <div class="result-item">
                     <span class="unit">${unitLabels[unit]}:</span>
-                    <span class="value">${formatResult(result, unit)} ${unitLabels[unit]}</span>
+                    <span class="value">${formattedResult} ${displayUnit}</span>
                 </div>
             `;
         }
