@@ -1,4 +1,4 @@
-const CACHE_NAME = 'power-converter-v1';
+const CACHE_NAME = 'power-converter-v2';
 const urlsToCache = [
     '/',
     '/index.html',
