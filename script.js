@@ -63,6 +63,41 @@ function animateValue(element, start, end, duration) {
     window.requestAnimationFrame(step);
 }
 
+function saveLastInput() {
+    localStorage.setItem('lastValue', inputValue.value);
+    localStorage.setItem('lastUnit', inputUnit.value);
+}
+
+function loadLastInput() {
+    const lastValue = localStorage.getItem('lastValue');
+    const lastUnit = localStorage.getItem('lastUnit');
+    if (lastValue) inputValue.value = lastValue;
+    if (lastUnit) inputUnit.value = lastUnit;
+}
+
+// Добавьте эту функцию
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Скопійовано в буфер обміну!');
+    }, (err) => {
+        console.error('Помилка копіювання: ', err);
+    });
+}
+
+// Вызовите эту функцию при загрузке страницы
+loadLastInput();
+
+// Добавьте в конец файла
+const themeToggle = document.createElement('button');
+themeToggle.classList.add('theme-toggle');
+themeToggle.innerHTML = '🌙';
+document.body.appendChild(themeToggle);
+
+themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-theme');
+    themeToggle.innerHTML = document.body.classList.contains('dark-theme') ? '☀️' : '🌙';
+});
+
 convertBtn.addEventListener('click', () => {
     const value = parseFloat(inputValue.value);
     const fromUnit = inputUnit.value;
@@ -77,7 +112,7 @@ convertBtn.addEventListener('click', () => {
         if (unit !== fromUnit) {
             const result = convertPower(value, fromUnit, unit);
             resultHtml += `
-                <div class="result-item">
+                <div class="result-item" onclick="copyToClipboard('${formatResult(result)} ${unitLabels[unit]}')">
                     <span class="unit">${unitLabels[unit]}:</span>
                     <span class="value" data-value="${result}">0</span>
                 </div>
@@ -95,8 +130,14 @@ convertBtn.addEventListener('click', () => {
 });
 
 // Автоматическая конвертация при изменении значения или единицы измерения
-inputValue.addEventListener('input', () => convertBtn.click());
-inputUnit.addEventListener('change', () => convertBtn.click());
+inputValue.addEventListener('input', () => {
+    convertBtn.click();
+    saveLastInput();
+});
+inputUnit.addEventListener('change', () => {
+    convertBtn.click();
+    saveLastInput();
+});
 
 // Регистрация Service Worker
 if ('serviceWorker' in navigator) {
