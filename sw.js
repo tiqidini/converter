@@ -1,9 +1,10 @@
-const CACHE_NAME = 'power-converter-v2';
+const CACHE_NAME = 'power-converter-v3';
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/styles.css',
-    '/script.js',
+    '/converter/',
+    '/converter/index.html',
+    '/converter/styles.css',
+    '/converter/script.js',
+    '/converter/icon.png',
     'https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.js'
 ];
 

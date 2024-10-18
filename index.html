@@ -1,30 +1,28 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Конвертер мощности</title>
+    <title>Конвертер потужності</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="Конвертер мощности">
-    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="apple-mobile-web-app-title" content="Конвертер потужності">
+    <link rel="apple-touch-icon" href="/converter/icon.png">
 </head>
 <body>
     <div class="container">
-        <h1>Конвертер мощности</h1>
+        <h1>Конвертер потужності</h1>
         <div class="converter">
-            <input type="number" id="input-value" placeholder="Введите значение">
+            <input type="number" id="input-value" placeholder="Введіть значення">
             <select id="input-unit">
                 <option value="dbm">dBm</option>
                 <option value="w">Вт</option>
                 <option value="mw">мВт</option>
                 <option value="uw">мкВт</option>
-                <option value="nw">нВт</option>
-                <option value="kw">кВт</option>
             </select>
-            <button id="convert-btn">Конвертировать</button>
+            <button id="convert-btn">Конвертувати</button>
         </div>
         <div id="results" class="results"></div>
     </div>

@@ -3,13 +3,12 @@ const inputUnit = document.getElementById('input-unit');
 const convertBtn = document.getElementById('convert-btn');
 const results = document.getElementById('results');
 
-const units = ['dbm', 'w', 'mw', 'uw', 'nw'];
+const units = ['dbm', 'w', 'mw', 'uw'];
 const unitLabels = {
     'dbm': 'dBm',
     'w': 'Вт',
     'mw': 'мВт',
-    'uw': 'мкВт',
-    'nw': 'нВт'
+    'uw': 'мкВт'
 };
 
 function convertPower(value, fromUnit, toUnit) {
@@ -28,9 +27,6 @@ function convertPower(value, fromUnit, toUnit) {
         case 'uw':
             watts = value / 1000000;
             break;
-        case 'nw':
-            watts = value / 1000000000;
-            break;
     }
 
     // Конвертация из ватт в нужную единицу
@@ -43,13 +39,11 @@ function convertPower(value, fromUnit, toUnit) {
             return watts * 1000;
         case 'uw':
             return watts * 1000000;
-        case 'nw':
-            return watts * 1000000000;
     }
 }
 
 function formatResult(value) {
-    return value.toLocaleString('ru-RU', { 
+    return value.toLocaleString('uk-UA', { 
         minimumFractionDigits: 2, 
         maximumFractionDigits: 6 
     });
@@ -74,11 +68,11 @@ convertBtn.addEventListener('click', () => {
     const fromUnit = inputUnit.value;
 
     if (isNaN(value)) {
-        results.innerHTML = '<p>Пожалуйста, введите числовое значение.</p>';
+        results.innerHTML = '<p>Будь ласка, введіть числове значення.</p>';
         return;
     }
 
-    let resultHtml = '<h3>Результаты:</h3>';
+    let resultHtml = '<h3>Результати:</h3>';
     units.forEach(unit => {
         if (unit !== fromUnit) {
             const result = convertPower(value, fromUnit, unit);
@@ -107,8 +101,8 @@ inputUnit.addEventListener('change', () => convertBtn.click());
 // Регистрация Service Worker
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(reg => console.log('Service Worker зарегистрирован'))
-            .catch(err => console.log('Ошибка регистрации Service Worker:', err));
+        navigator.serviceWorker.register('/converter/sw.js')
+            .then(reg => console.log('Service Worker зареєстровано'))
+            .catch(err => console.log('Помилка реєстрації Service Worker:', err));
     });
 }
