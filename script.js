@@ -147,3 +147,34 @@ if ('serviceWorker' in navigator) {
             .catch(err => console.log('Помилка реєстрації Service Worker:', err));
     });
 }
+
+// Добавьте эту функцию после других функций конвертации
+function convertErrorDbToPercent(errorDb) {
+    // Формула: ошибка_процент = (10^(ошибка_дБ/10) - 1) * 100
+    return (Math.pow(10, errorDb / 10) - 1) * 100;
+}
+
+// Добавьте новый элемент ввода и кнопку в HTML
+const errorDbInput = document.createElement('input');
+errorDbInput.type = 'number';
+errorDbInput.id = 'error-db-input';
+errorDbInput.placeholder = 'Похибка в дБ';
+
+const errorConvertBtn = document.createElement('button');
+errorConvertBtn.id = 'error-convert-btn';
+errorConvertBtn.textContent = 'Конвертувати похибку';
+
+// Вставьте новые элементы после основного конвертера
+document.querySelector('.converter').insertAdjacentElement('afterend', errorDbInput);
+errorDbInput.insertAdjacentElement('afterend', errorConvertBtn);
+
+// Добавьте обработчик события для новой кнопки
+errorConvertBtn.addEventListener('click', () => {
+    const errorDb = parseFloat(errorDbInput.value);
+    if (isNaN(errorDb)) {
+        alert('Будь ласка, введіть числове значення похибки в дБ.');
+        return;
+    }
+    const errorPercent = convertErrorDbToPercent(errorDb);
+    alert(`Похибка ${errorDb} дБ відповідає ${errorPercent.toFixed(2)}% у відносних одиницях.`);
+});
