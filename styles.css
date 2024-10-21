@@ -163,3 +163,75 @@ body.dark-theme .result-item {
     margin-top: 10px;
     width: 100%;
 }
+
+.error-converter {
+    margin-top: 30px;
+}
+
+#error-db-input {
+    flex-grow: 1;
+}
+
+#error-convert-btn {
+    width: auto;
+}
+
+/* Стили для мобильных устройств */
+@media (max-width: 767px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .converter, .error-converter {
+        flex-direction: column;
+    }
+
+    input, select, button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    button {
+        margin-bottom: 0;
+    }
+
+    .result-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .value {
+        margin-left: 0;
+        margin-top: 5px;
+    }
+}
+
+/* Оптимизация для сенсорных устройств */
+@media (hover: none) {
+    input[type="number"] {
+        font-size: 16px; /* Предотвращает масштабирование на iOS */
+    }
+
+    select {
+        font-size: 16px;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg fill="%234299e1" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+        background-repeat: no-repeat;
+        background-position-x: 100%;
+        background-position-y: 50%;
+    }
+
+    button {
+        padding: 15px;
+    }
+}

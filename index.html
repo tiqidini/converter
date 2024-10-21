@@ -15,7 +15,7 @@
     <div class="container">
         <h1>Конвертер потужності</h1>
         <div class="converter">
-            <input type="number" id="input-value" placeholder="Введіть значення">
+            <input type="number" id="input-value" placeholder="Введіть значення" inputmode="decimal">
             <select id="input-unit">
                 <option value="dbm">dBm</option>
                 <option value="w">Вт</option>
@@ -25,6 +25,11 @@
             <button id="convert-btn">Конвертувати</button>
         </div>
         <div id="results" class="results"></div>
+        <div class="converter error-converter">
+            <input type="number" id="error-db-input" placeholder="Похибка в дБ" inputmode="decimal">
+            <button id="error-convert-btn">Конвертувати похибку</button>
+        </div>
+        <div id="error-results" class="results"></div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.4.4/math.js"></script>
     <script src="script.js"></script>

@@ -148,33 +148,39 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// Добавьте эту функцию после других функций конвертации
+// Обновите эту функцию
 function convertErrorDbToPercent(errorDb) {
-    // Формула: ошибка_процент = (10^(ошибка_дБ/10) - 1) * 100
     return (Math.pow(10, errorDb / 10) - 1) * 100;
 }
 
-// Добавьте новый элемент ввода и кнопку в HTML
-const errorDbInput = document.createElement('input');
-errorDbInput.type = 'number';
-errorDbInput.id = 'error-db-input';
-errorDbInput.placeholder = 'Похибка в дБ';
+// Обновите эту часть кода
+const errorDbInput = document.getElementById('error-db-input');
+const errorConvertBtn = document.getElementById('error-convert-btn');
+const errorResults = document.getElementById('error-results');
 
-const errorConvertBtn = document.createElement('button');
-errorConvertBtn.id = 'error-convert-btn';
-errorConvertBtn.textContent = 'Конвертувати похибку';
-
-// Вставьте новые элементы после основного конвертера
-document.querySelector('.converter').insertAdjacentElement('afterend', errorDbInput);
-errorDbInput.insertAdjacentElement('afterend', errorConvertBtn);
-
-// Добавьте обработчик события для новой кнопки
 errorConvertBtn.addEventListener('click', () => {
     const errorDb = parseFloat(errorDbInput.value);
     if (isNaN(errorDb)) {
-        alert('Будь ласка, введіть числове значення похибки в дБ.');
+        errorResults.innerHTML = '<p>Будь ласка, введіть числове значення похибки в дБ.</p>';
         return;
     }
     const errorPercent = convertErrorDbToPercent(errorDb);
-    alert(`Похибка ${errorDb} дБ відповідає ${errorPercent.toFixed(2)}% у відносних одиницях.`);
+    let resultHtml = '<h3>Результат конвертації похибки:</h3>';
+    resultHtml += `
+        <div class="result-item" onclick="copyToClipboard('${errorPercent.toFixed(2)}%')">
+            <span class="unit">Відносна похибка:</span>
+            <span class="value" data-value="${errorPercent}">0</span>
+            <span class="unit">%</span>
+        </div>
+    `;
+    errorResults.innerHTML = resultHtml;
+
+    // Анимация результата
+    const valueElement = errorResults.querySelector('.value');
+    animateValue(valueElement, 0, errorPercent, 1000);
 });
+
+// Автоматическая конвертация при изменении значения
+errorDbInput.addEventListener('input', () => errorConvertBtn.click());
+
+// ... (остальной код остается без изменений)
