@@ -11,7 +11,6 @@ const unitLabels = {
     'uw': 'мкВт'
 };
 
-// Добавьте эти функции после объявления переменных
 const increaseBtn = document.getElementById('increase-btn');
 const decreaseBtn = document.getElementById('decrease-btn');
 const errorIncreaseBtn = document.getElementById('error-increase-btn');
@@ -95,7 +94,6 @@ function loadLastInput() {
     if (lastUnit) inputUnit.value = lastUnit;
 }
 
-// Добавьте эту функцию
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
         alert('Скопійовано в буфер обміну!');
@@ -104,19 +102,7 @@ function copyToClipboard(text) {
     });
 }
 
-// Вызовите эту функцию при загрузке страницы
 loadLastInput();
-
-// Добавьте в конец файла
-const themeToggle = document.createElement('button');
-themeToggle.classList.add('theme-toggle');
-themeToggle.innerHTML = '🌙';
-document.body.appendChild(themeToggle);
-
-themeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-theme');
-    themeToggle.innerHTML = document.body.classList.contains('dark-theme') ? '☀️' : '🌙';
-});
 
 convertBtn.addEventListener('click', () => {
     const value = parseFloat(inputValue.value);
@@ -142,14 +128,12 @@ convertBtn.addEventListener('click', () => {
 
     results.innerHTML = resultHtml;
 
-    // Анимация результатов
     document.querySelectorAll('.value').forEach(element => {
         const endValue = parseFloat(element.dataset.value);
         animateValue(element, 0, endValue, 1000);
     });
 });
 
-// Автоматическая конвертация при изменении значения или единицы измерения
 inputValue.addEventListener('input', () => {
     convertBtn.click();
     saveLastInput();
@@ -159,7 +143,6 @@ inputUnit.addEventListener('change', () => {
     saveLastInput();
 });
 
-// Регистрация Service Worker
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/converter/sw.js')
@@ -168,12 +151,10 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// Обновите эту функцию
 function convertErrorDbToPercent(errorDb) {
     return (Math.pow(10, errorDb / 10) - 1) * 100;
 }
 
-// Обновите эту часть кода
 const errorDbInput = document.getElementById('error-db-input');
 const errorConvertBtn = document.getElementById('error-convert-btn');
 const errorResults = document.getElementById('error-results');
@@ -185,7 +166,7 @@ errorConvertBtn.addEventListener('click', () => {
         return;
     }
     const errorPercent = convertErrorDbToPercent(errorDb);
-    let resultHtml = '<h3>Результа�� конвертації похибки:</h3>';
+    let resultHtml = '<h3>Результат конвертації похибки:</h3>';
     resultHtml += `
         <div class="result-item" onclick="copyToClipboard('${errorPercent.toFixed(2)}%')">
             <span class="unit">Відносна похибка:</span>
@@ -194,12 +175,8 @@ errorConvertBtn.addEventListener('click', () => {
     `;
     errorResults.innerHTML = resultHtml;
 
-    // Анимация результата
     const valueElement = errorResults.querySelector('.value');
     animateValue(valueElement, 0, errorPercent, 1000, true);
 });
 
-// Автоматическая конвертация при изменении значения
 errorDbInput.addEventListener('input', () => errorConvertBtn.click());
-
-// ... (остальной код остается без изменений)
