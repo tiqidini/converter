@@ -2,16 +2,16 @@ body {
     font-family: 'Roboto', sans-serif;
     background-color: #f0f4f8;
     margin: 0;
-    padding: 20px;
+    padding: 10px;
     color: #2d3748;
     line-height: 1.6;
 }
 
 .container {
-    max-width: 600px;
+    max-width: 100%;
     margin: 0 auto;
     background-color: #ffffff;
-    padding: 30px;
+    padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
@@ -19,15 +19,20 @@ body {
 h1 {
     text-align: center;
     color: #2b6cb0;
-    margin-bottom: 30px;
-    font-size: 2.5rem;
+    margin-bottom: 20px;
+    font-size: 2rem;
 }
 
 .converter {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    margin-bottom: 30px;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
 }
 
 input, select, button {
@@ -36,6 +41,28 @@ input, select, button {
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     transition: all 0.3s ease;
+    width: 100%;
+}
+
+.input-controls {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+}
+
+.control-btn {
+    padding: 5px 10px;
+    font-size: 18px;
+    background-color: #4299e1;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+
+.control-btn:last-child {
+    margin-bottom: 0;
 }
 
 input:focus, select:focus {
@@ -56,18 +83,16 @@ button {
 
 button:hover {
     background-color: #3182ce;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(66, 153, 225, 0.4);
 }
 
-button:active    {
-    transform: translateY(0);
+button:active {
+    transform: translateY(1px);
     box-shadow: 0 2px 4px rgba(66, 153, 225, 0.2);
 }
 
 .results {
     background-color: #ebf8ff;
-    padding: 20px;
+    padding: 15px;
     border-radius: 8px;
     font-size: 16px;
 }
@@ -76,8 +101,8 @@ button:active    {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
-    padding: 12px;
+    margin-bottom: 10px;
+    padding: 10px;
     background-color: #fff;
     border-radius: 6px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
@@ -102,25 +127,6 @@ button:active    {
     margin-left: 10px;
 }
 
-@media (min-width: 768px) {
-    .converter {
-        flex-direction: row;
-    }
-
-    input {
-        flex-grow: 1;
-    }
-
-    select {
-        width: 100px;
-    }
-
-    button {
-        width: 150px;
-    }
-}
-
-/* Добавьте в конец файла */
 body.dark-theme {
     background-color: #1a202c;
     color: #e2e8f0;
@@ -153,53 +159,57 @@ body.dark-theme .result-item {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Добавьте эти стили в конец файла */
-#error-db-input {
-    margin-top: 20px;
-    width: calc(100% - 24px);
-}
-
-#error-convert-btn {
-    margin-top: 10px;
-    width: 100%;
-}
-
 .error-converter {
-    margin-top: 30px;
+    margin-top: 20px;
 }
 
-#error-db-input {
-    flex-grow: 1;
-}
-
-#error-convert-btn {
-    width: auto;
-}
-
-/* Стили для мобильных устройств */
-@media (max-width: 767px) {
-    body {
-        padding: 10px;
+/* Оптимизация для сенсорных устройств */
+@media (hover: none) {
+    input[type="number"] {
+        font-size: 16px;
     }
 
-    .container {
-        padding: 20px;
-    }
-
-    h1 {
-        font-size: 2rem;
-    }
-
-    .converter, .error-converter {
-        flex-direction: column;
-    }
-
-    input, select, button {
-        width: 100%;
-        margin-bottom: 10px;
+    select {
+        font-size: 16px;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg fill="%234299e1" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+        background-repeat: no-repeat;
+        background-position-x: 95%;
+        background-position-y: 50%;
+        padding-right: 30px;
     }
 
     button {
+        padding: 15px;
+    }
+}
+
+/* Дополнительные стили для мобильных устройств */
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    .input-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .input-controls {
+        flex-direction: row;
+        justify-content: space-between;
+        margin-left: 0;
+        margin-top: 10px;
+    }
+
+    .control-btn {
+        width: 48%;
         margin-bottom: 0;
     }
 
@@ -211,27 +221,5 @@ body.dark-theme .result-item {
     .value {
         margin-left: 0;
         margin-top: 5px;
-    }
-}
-
-/* Оптимизация для сенсорных устройств */
-@media (hover: none) {
-    input[type="number"] {
-        font-size: 16px; /* Предотвращает масштабирование на iOS */
-    }
-
-    select {
-        font-size: 16px;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        background-image: url('data:image/svg+xml;utf8,<svg fill="%234299e1" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
-        background-repeat: no-repeat;
-        background-position-x: 100%;
-        background-position-y: 50%;
-    }
-
-    button {
-        padding: 15px;
     }
 }

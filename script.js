@@ -11,6 +11,24 @@ const unitLabels = {
     'uw': 'мкВт'
 };
 
+// Добавьте эти функции после объявления переменных
+const increaseBtn = document.getElementById('increase-btn');
+const decreaseBtn = document.getElementById('decrease-btn');
+const errorIncreaseBtn = document.getElementById('error-increase-btn');
+const errorDecreaseBtn = document.getElementById('error-decrease-btn');
+
+function changeValue(input, delta) {
+    let value = parseFloat(input.value) || 0;
+    value += delta;
+    input.value = value.toFixed(2);
+    input.dispatchEvent(new Event('input'));
+}
+
+increaseBtn.addEventListener('click', () => changeValue(inputValue, 1));
+decreaseBtn.addEventListener('click', () => changeValue(inputValue, -1));
+errorIncreaseBtn.addEventListener('click', () => changeValue(errorDbInput, 0.1));
+errorDecreaseBtn.addEventListener('click', () => changeValue(errorDbInput, -0.1));
+
 function convertPower(value, fromUnit, toUnit) {
     // Конвертация в ватты
     let watts;

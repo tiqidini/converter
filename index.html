@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Конвертер потужності</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
@@ -15,7 +15,13 @@
     <div class="container">
         <h1>Конвертер потужності</h1>
         <div class="converter">
-            <input type="number" id="input-value" placeholder="Введіть значення" inputmode="decimal">
+            <div class="input-group">
+                <input type="number" id="input-value" placeholder="Введіть значення" inputmode="decimal">
+                <div class="input-controls">
+                    <button class="control-btn" id="increase-btn">+</button>
+                    <button class="control-btn" id="decrease-btn">-</button>
+                </div>
+            </div>
             <select id="input-unit">
                 <option value="dbm">dBm</option>
                 <option value="w">Вт</option>
@@ -26,7 +32,13 @@
         </div>
         <div id="results" class="results"></div>
         <div class="converter error-converter">
-            <input type="number" id="error-db-input" placeholder="Похибка в дБ" inputmode="decimal">
+            <div class="input-group">
+                <input type="number" id="error-db-input" placeholder="Похибка в дБ" inputmode="decimal">
+                <div class="input-controls">
+                    <button class="control-btn" id="error-increase-btn">+</button>
+                    <button class="control-btn" id="error-decrease-btn">-</button>
+                </div>
+            </div>
             <button id="error-convert-btn">Конвертувати похибку</button>
         </div>
         <div id="error-results" class="results"></div>
