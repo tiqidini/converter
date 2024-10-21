@@ -67,13 +67,15 @@ function formatResult(value) {
     });
 }
 
-function animateValue(element, start, end, duration) {
+function animateValue(element, start, end, duration, isPercentage = false) {
     let startTimestamp = null;
     const step = (timestamp) => {
         if (!startTimestamp) startTimestamp = timestamp;
         const progress = Math.min((timestamp - startTimestamp) / duration, 1);
         const current = start + progress * (end - start);
-        element.textContent = formatResult(current);
+        element.textContent = isPercentage ? 
+            `${formatResult(current)} %` : 
+            formatResult(current);
         if (progress < 1) {
             window.requestAnimationFrame(step);
         }
@@ -183,19 +185,18 @@ errorConvertBtn.addEventListener('click', () => {
         return;
     }
     const errorPercent = convertErrorDbToPercent(errorDb);
-    let resultHtml = '<h3>Результат конвертації похибки:</h3>';
+    let resultHtml = '<h3>Результа�� конвертації похибки:</h3>';
     resultHtml += `
         <div class="result-item" onclick="copyToClipboard('${errorPercent.toFixed(2)}%')">
             <span class="unit">Відносна похибка:</span>
-            <span class="value" data-value="${errorPercent}">0</span>
-            <span class="unit">%</span>
+            <span class="value" data-value="${errorPercent}">0 %</span>
         </div>
     `;
     errorResults.innerHTML = resultHtml;
 
     // Анимация результата
     const valueElement = errorResults.querySelector('.value');
-    animateValue(valueElement, 0, errorPercent, 1000);
+    animateValue(valueElement, 0, errorPercent, 1000, true);
 });
 
 // Автоматическая конвертация при изменении значения
